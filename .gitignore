@@ -1,0 +1,5 @@
+.DS_Store
+gurobi.log
+PhISCS-B/csp_maxsat
+*.pyc
+PhISCS-B/solvers/maxhs

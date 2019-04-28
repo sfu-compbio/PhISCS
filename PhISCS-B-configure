@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# get submodules
+git submodule update --init --recursive
+
+# make z3
+(cd PhISCS-B/solvers/z3; ./configure)
+(cd PhISCS-B/solvers/z3/build; make)
+
+# make maxhs
+# (cd PhISCS-B/solvers/maxhs; make)
+
+# make codes
+(cd PhISCS-B; make)

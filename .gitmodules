@@ -1,0 +1,3 @@
+[submodule "PhISCS-B/solvers/z3"]
+	path = PhISCS-B/solvers/z3
+	url = https://github.com/Z3Prover/z3.git

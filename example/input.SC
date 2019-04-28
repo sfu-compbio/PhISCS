@@ -1,0 +1,11 @@
+cellID/mutID	mut0	mut1	mut2	mut3	mut4	mut5	mut6	mut7
+cell0	0	0	?	0	0	0	0	0
+cell1	0	?	1	0	0	0	1	1
+cell2	0	0	1	0	0	0	1	1
+cell3	1	1	0	0	0	0	0	0
+cell4	0	0	1	0	0	0	0	0
+cell5	1	0	0	0	0	0	0	0
+cell6	0	0	1	0	0	0	1	1
+cell7	0	0	1	0	0	0	0	0
+cell8	?	0	0	0	?	0	?	1
+cell9	0	1	0	0	0	0	0	0

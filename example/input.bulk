@@ -1,0 +1,9 @@
+ID	Chromosome	Position	MutantCount	ReferenceCount	INFO
+mut0	1	0	766;511;688	4234;4489;4312	sampleIDs=primary,metastasis1,metastasis2
+mut1	1	1	719;479;719	4281;4521;4281	sampleIDs=primary,metastasis1,metastasis2
+mut2	1	2	1246;1094;859	3754;3906;4141	sampleIDs=primary,metastasis1,metastasis2
+mut3	1	3	298;226;272	4702;4774;4728	sampleIDs=primary,metastasis1,metastasis2
+mut4	1	4	353;227;255	4647;4773;4745	sampleIDs=primary,metastasis1,metastasis2
+mut5	1	5	306;232;279	4694;4768;4721	sampleIDs=primary,metastasis1,metastasis2
+mut6	1	6	725;449;492	4275;4551;4508	sampleIDs=primary,metastasis1,metastasis2
+mut7	1	7	703;417;507	4297;4583;4493	sampleIDs=primary,metastasis1,metastasis2

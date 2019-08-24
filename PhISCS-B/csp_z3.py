@@ -18,7 +18,7 @@ def read_data(file):
     df = pd.read_csv(file, sep='\t', index_col=0)
     df = df.replace('?', 3)
     df = df.astype(int)
-    return df.values
+    return df.values, df.columns
 
 
 def write_output(outresult, file, inputfile, col_el):
@@ -134,15 +134,10 @@ def getA(p,q):
 
 
 def produce_input(fstr, data, numCells, numMuts, allow_col_elim, fn_weight, fp_weight, w_weight, maxCol, allow_vaf, vafP, vafT):
-    global costant_obj
-    global whole_obj
-    costant_obj = 0.0
-    whole_obj = 0.0
     file = open(fstr, 'w')
     file.write('(check-sat-using sat)\n')
     for i in range(numCells):
         for j in range(numMuts):
-            file.write('(declare-const X_' + str(i) + '_' + str(j) + ' Bool)\n')
             file.write('(declare-const Y_' + str(i) + '_' + str(j) + ' Bool)\n')
 
     for p in range(numMuts):
@@ -152,6 +147,9 @@ def produce_input(fstr, data, numCells, numMuts, allow_col_elim, fn_weight, fp_w
             file.write('(declare-const B_' + str(p) + '_' + str(q) + '_1_1 Bool)\n')
 
     if allow_col_elim:
+        for i in range(numCells):
+            for j in range(numMuts):
+                file.write('(declare-const X_' + str(i) + '_' + str(j) + ' Bool)\n')
         for j in range(numMuts):
             file.write('(declare-const '+getK(j)+' Bool)\n')
     else:
@@ -166,29 +164,12 @@ def produce_input(fstr, data, numCells, numMuts, allow_col_elim, fn_weight, fp_w
     for i in range(numCells):
         for j in range(numMuts):
             if data[i][j] == 0:
-                file.write('(assert-soft (= '+getX(i,j)+' true) :weight '+str(np.log(fn_weight/(1-fn_weight)))+')\n')
-                file.write('(assert (= '+getX(i,j)+' '+getY(i,j)+'))\n')
-                costant_obj += np.log(1-fn_weight)
-                whole_obj += np.log(fn_weight/(1-fn_weight))
+                file.write('(assert-soft '+getY(i,j)+' :weight '+str(np.log(fn_weight/(1-fp_weight)))+')\n')
             elif data[i][j] == 1:
-                file.write('(assert-soft (= '+getX(i,j)+' true) :weight '+str(np.log(fp_weight/(1-fp_weight)))+')\n')
-                file.write('(assert (not (= '+getX(i,j)+' '+getY(i,j)+')))\n')
-                costant_obj += np.log(1-fp_weight)
-                whole_obj += np.log(fp_weight/(1-fp_weight))
-            elif data[i][j] == 3:# NA Values
-                file.write('(assert (= '+getX(i,j)+' '+getY(i,j)+'))\n')
-            else:
-                print('Error. Data entry in matrix ' + fstr + ' not equal to any of 0,1,2. EXITING !!!')
-                sys.exit(2)
+                file.write('(assert-soft '+getY(i,j)+' :weight '+str(np.log((1-fn_weight)/fp_weight))+')\n')
 
     # Constraint for not allowing removed columns go further than maxCol
-
     if allow_col_elim:
-        '''
-        for j in range(numMuts):
-            file.write('(assert-soft (not '+getK(j)+') :weight '+str(15)+')\n')
-        '''
-        
         for combo in combinations(range(numMuts), maxCol+1):
             temp = '(assert (not (and'
             for i in combo:
@@ -196,27 +177,17 @@ def produce_input(fstr, data, numCells, numMuts, allow_col_elim, fn_weight, fp_w
             temp = temp + ')))\n'
             file.write(temp)
         
-        for j in range(numMuts):
-            x_j = (data[:,j]==1).sum()
-            y_j = (data[:,j]==0).sum()
-            w = w_weight-x_j*np.log(1-fp_weight)-y_j*np.log(1-fn_weight)
-            file.write('(assert-soft (= '+getK(j)+' true) :weight '+str(w)+')\n')
-            whole_obj += w
-            '''
-            for i in range(numCells):
+        for i in range(numCells):
+            for j in range(numMuts):
+                file.write('(assert (or (not '+getY(i,j)+') (not '+getK(j)+') '+getX(i,j)+' ))\n')
+                file.write('(assert (or '+getY(i,j)+' (not '+getX(i,j)+') ))\n')
+                file.write('(assert (or '+getK(j)+' (not '+getX(i,j)+') ))\n')
                 if data[i][j] == 0:
-                    w = -1*np.log(fn_weight/(1-fn_weight))
-                    file.write('(assert (= '+getZ(i,j)+' (and '+getX(i,j)+' '+getK(j)+')))\n')
-                    file.write('(assert-soft (= '+getZ(i,j)+' true) :weight '+str(w)+')\n')
-                    # file.write('(assert-soft (= (and '+getX(i,j)+' '+getK(j)+') true) :weight '+str(w)+')\n')
-                    whole_obj += w
+                    file.write('(assert-soft (not '+getK(j)+') :weight '+str(np.log(1-fp_weight))+')\n')
+                    file.write('(assert-soft '+getX(i,j)+' :weight '+str(-np.log(fn_weight/(1-fp_weight)))+')\n')
                 elif data[i][j] == 1:
-                    w = -1*np.log(fp_weight/(1-fp_weight))
-                    file.write('(assert (= '+getZ(i,j)+' (and '+getX(i,j)+' '+getK(j)+')))\n')
-                    file.write('(assert-soft (= '+getZ(i,j)+' true) :weight '+str(w)+')\n')
-                    # file.write('(assert-soft (= (and '+getX(i,j)+' '+getK(j)+') true) :weight '+str(w)+')\n')
-                    whole_obj += w
-            '''
+                    file.write('(assert-soft (not '+getK(j)+') :weight '+str(np.log(fp_weight))+')\n')
+                    file.write('(assert-soft '+getX(i,j)+' :weight '+str(-np.log((1-fn_weight)/fp_weight))+')\n')
 
     # Constraint for VAFs
     if allow_vaf:
@@ -362,7 +333,7 @@ if __name__ == '__main__':
     fp_weight = args.fpWeight
     w_weight = args.wWeight
     outDir = args.outDir
-    noisy_data = read_data(inFile)
+    noisy_data, mutations_names = read_data(inFile)
     row = noisy_data.shape[0]
     col = noisy_data.shape[1]
     logFile = outDir + '/' + os.path.splitext(inFile.split('/')[-1])[0] + '.log'
@@ -412,7 +383,7 @@ if __name__ == '__main__':
     os.system(command)
     total_running = datetime.now()-t0
     
-    log.write('FILE_NAME: '+inFile.split('/')[-1]+'\n')
+    log.write('COMMAND: "{0}"\n'.format(' '.join(sys.argv)))
     log.write('NUM_CELLS(ROWS): '+str(row)+'\n')
     log.write('NUM_MUTATIONS(COLUMNS): '+str(col)+'\n')
     log.write('FN_WEIGHT: '+str(fn_weight)+'\n')
@@ -422,25 +393,24 @@ if __name__ == '__main__':
     log.write('MODEL_SOLVING_TIME_SECONDS: '+str('{0:.3f}'.format(total_model.total_seconds()))+'\n')
     log.write('RUNNING_TIME_SECONDS: '+str('{0:.3f}'.format(total_running.total_seconds()))+'\n')
     log.write('IS_CONFLICT_FREE: '+str(check_conflict_free(output_mat))+'\n')
+    i = inFile
+    o = os.path.splitext(logFile)[0] + '.CFMatrix'
+    log.write('LIKELIHOOD: '+ str(get_liklihood(i, o, fn_weight, fp_weight, col_el))+'\n')
+    # log.write('LIKELIHOOD: '+ str(whole_obj+costant_obj-obj)+'\n')
     a = compare_flips(noisy_data, output_data, row, col, True)
     b = compare_flips(noisy_data, output_data, row, col, False)
     c = compare_na(noisy_data, output_data, row, col, True)
     d = compare_na(noisy_data, output_data, row, col, False)
-    log.write('TOTAL_FLIPS_REPORTED: '+str(a+b)+'\n')
+    log.write('COL_WEIGHT: '+str(w_weight)+'\n')
+    log.write('TOTAL_FLIPS_REPORTED: '+str(a+b+c+d)+'\n')
     log.write('0_1_FLIPS_REPORTED: '+str(a)+'\n')
     log.write('1_0_FLIPS_REPORTED: '+str(b)+'\n')
     log.write('?_0_FLIPS_REPORTED: '+str(c)+'\n')
     log.write('?_1_FLIPS_REPORTED: '+str(d)+'\n')
-    log.write('COL_WEIGHT: '+str(w_weight)+'\n')
     log.write('MUTATIONS_REMOVED_UPPER_BOUND: '+str(maxCol)+'\n')
     log.write('MUTATIONS_REMOVED_NUM: '+str(len(col_el))+'\n')
-    temp = 'MUTATIONS_REMOVED_INDEX: '+ ',' . join([str(i) for i in sorted(col_el)])
-    # 'MUTATIONS_REMOVED_NAME'
+    temp = 'MUTATIONS_REMOVED_ID: '+ ',' . join([str(mutations_names[i-1]) for i in sorted(col_el)])
     log.write(temp+'\n')
-    # log.write('LIKELIHOOD: '+ str(whole_obj+costant_obj-obj)+'\n')
-    i = inFile
-    o = os.path.splitext(logFile)[0] + '.CFMatrix'
-    # log.write('LIKELIHOOD: '+ str(get_liklihood(i, o, fn_weight, fp_weight)+w_weight*len(col_el))+'\n')
     log.write('-----------------------------------\n')
     log.close()
     

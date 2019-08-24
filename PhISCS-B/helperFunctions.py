@@ -4,54 +4,58 @@ import os
 from math import *
 
 def readMatrixIntoHash(pathInputFile):
-	assert os.path.exists(pathInputFile), "There does not exist file " + pathInputFile
-	inputFile  = open(pathInputFile, "r")
-	inputLines = inputFile.readlines()
-	inputFile.close()
-	assert len(inputLines) > 0, "ERROR. Input file " + pathInputFile + " is empty."
+    assert os.path.exists(pathInputFile), "There does not exist file " + pathInputFile
+    inputFile  = open(pathInputFile, "r")
+    inputLines = inputFile.readlines()
+    inputFile.close()
+    assert len(inputLines) > 0, "ERROR. Input file " + pathInputFile + " is empty."
 
-	headerEntries	= inputLines[0].strip().split()
-	columnIDs	= headerEntries[1:len(headerEntries)]
-	numColumns 	= len(columnIDs)
-	assert numColumns > 0, "ERROR. First (header) line in " + pathSCFile + " is empty. Exiting!!!"
-	inputLinesWithoutHeader = inputLines[1:len(inputLines)]
-	D = {}
-	for line in inputLinesWithoutHeader:
-		lineColumns = line.strip().split()
-		rowID = lineColumns[0].strip()
-		assert rowID not in D.keys(), "ERROR in function readMatrixIntoHash. " + rowID + " is already in keys."
-		D[rowID] = {}
-		for i in range(numColumns):
-			D[rowID][columnIDs[i]] = int(lineColumns[1+i])
-	return D
+    headerEntries    = inputLines[0].strip().split()
+    columnIDs    = headerEntries[1:len(headerEntries)]
+    numColumns     = len(columnIDs)
+    assert numColumns > 0, "ERROR. First (header) line in " + pathSCFile + " is empty. Exiting!!!"
+    inputLinesWithoutHeader = inputLines[1:len(inputLines)]
+    D = {}
+    for line in inputLinesWithoutHeader:
+        lineColumns = line.strip().split()
+        rowID = lineColumns[0].strip()
+        assert rowID not in D.keys(), "ERROR in function readMatrixIntoHash. " + rowID + " is already in keys."
+        D[rowID] = {}
+        for i in range(numColumns):
+            if lineColumns[1+i] != '?':
+                D[rowID][columnIDs[i]] = int(lineColumns[1+i])
+            else:
+                D[rowID][columnIDs[i]] = int(3)
+    return D
 
 
-def get_liklihood(inputSCMatrixFile, outputCFMatrixFile, fn, fp):
-	D = readMatrixIntoHash(inputSCMatrixFile)
-	E = readMatrixIntoHash(outputCFMatrixFile)
-	alpha = float(fp)
-	beta  = float(fn)
-	missingEntryCharacter = 2 
+def get_liklihood(inputSCMatrixFile, outputCFMatrixFile, fn, fp, removedMutations):
+    D = readMatrixIntoHash(inputSCMatrixFile)
+    E = readMatrixIntoHash(outputCFMatrixFile)
+    alpha = float(fp)
+    beta  = float(fn)
+    missingEntryCharacter = 3
 
-	objectiveValueFromCFMatrix = 0.0
-	cellIDs = E.keys()
-	mutIDs  = E[cellIDs[0]].keys()
-	dummyVariable = 1
-	for i in cellIDs:
-		for j in mutIDs:
-			if D[i][j] == 1:
-				if E[i][j] == 0:
-					objectiveValueFromCFMatrix += log(alpha)
-				elif E[i][j] == 1:
-					objectiveValueFromCFMatrix += log(1-alpha)
-			elif D[i][j] == 0:
-				if E[i][j] == 1:
-					objectiveValueFromCFMatrix += log(beta)
-				elif E[i][j] == 0:
-					objectiveValueFromCFMatrix += log(1-beta)
-			elif D[i][j] == missingEntryCharacter:
-				dummyVariable = 1
-	return objectiveValueFromCFMatrix
+    objectiveValueFromCFMatrix = 0.0
+    cellIDs = list(E.keys())
+    mutIDs  = E[cellIDs[0]].keys()
+    dummyVariable = 1
+    objective = 0
+    for j in mutIDs:
+        numZeros = 0
+        numOnes  = 0
+        for i in cellIDs:
+            if D[i][j] == 0:
+                numZeros += 1
+                objective += np.log(beta/(1-alpha)) * E[i][j]
+            elif D[i][j] == 1:
+                numOnes += 1
+                objective += np.log((1-beta)/alpha) * E[i][j]
+        objective += numZeros * np.log(1-alpha)
+        objective += numOnes * np.log(alpha)
+        if j in removedMutations:
+            objective -= (numZeros * np.log(1-alpha) + numOnes * (np.log(alpha) + np.log((1-beta)/alpha)))
+    return objective
 
 
 def draw_tree(filename, addBulk, bulkfile):

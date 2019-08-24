@@ -13,6 +13,7 @@ from datetime import datetime
 import argparse
 import errno
 import pandas as pd
+from faridFunctions import *
 
 
 # COMMAND LINE ARGUMENTS PARSING
@@ -38,6 +39,12 @@ parser.add_argument('-time', '--time', type=int, default=86400,
                     help='Max time (in seconds) allowed for the computation [default value is 24 hours]')
 parser.add_argument('--drawTree', action='store_true',
                     help='Draw output tree by Graphviz')
+parser.add_argument('--drawFarid', action='store_true',
+                    help='Draw output tree by Graphviz')
+# https://stackoverflow.com/questions/15753701/argparse-option-for-passing-a-list-as-option
+# parser.add_argument('--candidateISAV',
+#                     help='',
+#                     type=str)
 
 parser.add_argument('-w', '--colEliminationWeight', default=0, type=float,
                     help='Weight of column elimination [default value is 0]')
@@ -138,7 +145,17 @@ for p in range(numMutations+1):
 
 # ==== Variable K[j] is set to 1 if and only if mutation j is among eliminated mutations
 K = {}
+# candidateISAV = [int(item.replace('mut','')) for item in args.candidateISAV.split(',')]
+# f_i = args.SCFile
+# f_o = '/data/frashidi/PhISCS/_result/TP_FP/noBulk_k_0/' + filename + '.CFMatrix'
+# candidateISAV = give_me_muts_to_filter(f_i, f_o, args.maxMutationsToEliminate)
 for m in range(numMutations+1):
+    '''
+    if m in list(set(range(numMutations)) - set(candidateISAV)):
+        K[m] = model.addVar(vtype=GRB.BINARY, name='K[{0}]'.format(m), lb=0, ub=0)
+    else:
+        K[m] = model.addVar(vtype=GRB.BINARY, name='K[{0}]'.format(m))
+    '''
     K[m] = model.addVar(vtype=GRB.BINARY, name='K[{0}]'.format(m))
 model.addConstr(K[numMutations] == 0) # null mutation can not be eliminated 
 
@@ -403,3 +420,5 @@ log.close()
 
 if args.drawTree:
     draw_tree("{}.CFMatrix".format(outfile), usingBulk, args.bulkFile)
+if args.drawFarid:
+    draw_farid("{}.CFMatrix".format(outfile), usingBulk, args.bulkFile)

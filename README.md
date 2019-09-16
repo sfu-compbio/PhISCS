@@ -1,6 +1,6 @@
 # PhISCS
 
-PhISCS is a tool for sub-perfect tumor phylogeny reconstruction via integrative use of single cell and bulk sequencing data. If bulk sequencing data is used, we expect that mutations originate from diploid regions of the genome. Due to variance in VAF values, we recommend the use of bulk data in cases when sequencing depth is at least 1000x (haploid coverage). As output, PhISCS reports tree of tumor evolution together with a set of eliminated mutations, where eliminated mutations represent mutations violating Infinite Sites Assumption (due to deletion of variant allele or due to recurrent mutation) or mutations affected by copy number aberrations that were missed during the tumor copy number profiling (e.g. gain of non-variant allele). More details about the method can be found in the preprint available [here](https://www.biorxiv.org/content/biorxiv/early/2018/07/25/376996.full.pdf).
+PhISCS is a tool for sub-perfect tumor phylogeny reconstruction via integrative use of single-cell and bulk sequencing data. If bulk sequencing data is used, we expect that mutations originate from diploid regions of the genome. Due to variance in VAF values, we recommend the use of bulk data in cases when sequencing depth is at least 1000x (haploid coverage). As output, PhISCS reports tree of tumor evolution together with a set of eliminated mutations, where eliminated mutations represent mutations violating Infinite Sites Assumption (due to deletion of variant allele or due to recurrent mutation) or mutations affected by copy number aberrations that were missed during the tumor copy number profiling (e.g. gain of non-variant allele). More details about the method can be found in the preprint available [here](https://www.biorxiv.org/content/biorxiv/early/2018/07/25/376996.full.pdf).
 
 
 ## Contents
@@ -11,7 +11,7 @@ PhISCS is a tool for sub-perfect tumor phylogeny reconstruction via integrative 
        * [Prerequisite: CSP solver](#prerequisitecsp)
   2. [Running](#running)
      * [Input](#input)
-       * [Single Cell Matrix](#singlecellmatrix)
+       * [Single-cell Matrix](#singlecellmatrix)
        * [Bulk Data](#bulkdata)
      * [Output](#output)
        * [Log File](#logfile)
@@ -24,7 +24,7 @@ PhISCS is a tool for sub-perfect tumor phylogeny reconstruction via integrative 
 ## Installation
 PhISCS is written in Python and C. It supports both Python 2.7 and 3. Currently it is intended to be run on POSIX-based systems (only Linux and macOS have been tested).
 
-> **RECOMENDATION**:  At the moment, in cases when both, single cell and bulk data are used as input, we recommend the use of PhISCS-I over PhISCS-B (due to more thorough tests and software validation that we have performed for PhISCS-I). However, when single cell data is the only input, we have extensively tested both implementations and, since PhISCS-B can have potential running time advantage in this case, we recommend its use over PhISCS-I.   
+> **RECOMENDATION**:  At the moment, in cases when both, single-cell and bulk data are used as input, we recommend the use of PhISCS-I over PhISCS-B (due to more thorough tests and software validation that we have performed for PhISCS-I). However, when single-cell data is the only input, we have extensively tested both implementations and, since PhISCS-B can have potential running time advantage in this case, we recommend its use over PhISCS-I.   
 
 <a name="installationilp"></a>
 ### PhISCS-I
@@ -63,8 +63,8 @@ Some of CSP solver have been already included in the PhISCS package. There is an
 ### Input
 
 <a name="singlecellmatrix"></a>
-#### 1. Single Cell Matrix
-Single cell input is assumed to be represented in the form of ternary, __tab-delimited__, matrix with rows corresponding to single cells and columns corresponding to mutations. We assume that this file contains headers and that matrix is ternary matrix with 0 denoting the absence and 1 denoting the presence of mutation in a given cell, whereas ? represents the lack of information about presence/absence of mutation in a given cell (i.e. missing entry). In order to simplify parsing of the matrix, we also assume that upper left corner equals to string "cellID/mutID".
+#### 1. Single-cell Matrix
+Single-cell input is assumed to be represented in the form of ternary, __tab-delimited__, matrix with rows corresponding to single-cells and columns corresponding to mutations. We assume that this file contains headers and that matrix is ternary matrix with 0 denoting the absence and 1 denoting the presence of mutation in a given cell, whereas ? represents the lack of information about presence/absence of mutation in a given cell (i.e. missing entry). In order to simplify parsing of the matrix, we also assume that upper left corner equals to string "cellID/mutID".
 
 Below is an example of single-cell data matrix. Note that mutation and cell names are arbitrary strings not containing tabs or spaces, however they must be unique.
 ```
@@ -135,11 +135,10 @@ input file: data/ALL2.SC
 ### Parameters
 | Parameter  | Description                                                                                | Default  | Mandatory      |
 |------------|--------------------------------------------------------------------------------------------|----------|----------------|
-| -SCFile    | Path to single cell data matrix file                                                       | -        | :radio_button: |
+| -SCFile    | Path to single-cell data matrix file                                                       | -        | :radio_button: |
 | -fn        | Probablity of false negative                                                               | -        | :radio_button: |
 | -fp        | Probablity of false positive                                                               | -        | :radio_button: |
 | -o         | Output directory                                                                           | current  | :white_circle: |
-| -w         | Weight of column elimination                                                               | 0        | :white_circle: |
 | -kmax      | Max number of mutations to be eliminated                                                   | 0        | :white_circle: |
 | -threads   | Number of threads (supported by PhISCS-I)                                                  | 1        | :white_circle: |
 | -bulkFile  | Path to bulk data file                                                                     | -        | :white_circle: |

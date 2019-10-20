@@ -1,7 +1,8 @@
 # PhISCS
 
-PhISCS is a tool for sub-perfect tumor phylogeny reconstruction via integrative use of single-cell and bulk sequencing data. If bulk sequencing data is used, we expect that mutations originate from diploid regions of the genome. Due to variance in VAF values, we recommend the use of bulk data in cases when sequencing depth is at least 1000x (haploid coverage). As output, PhISCS reports tree of tumor evolution together with a set of eliminated mutations, where eliminated mutations represent mutations violating Infinite Sites Assumption (due to deletion of variant allele or due to recurrent mutation) or mutations affected by copy number aberrations that were missed during the tumor copy number profiling (e.g. gain of non-variant allele). More details about the method can be found in the preprint available [here](https://www.biorxiv.org/content/biorxiv/early/2018/07/25/376996.full.pdf).
+PhISCS is a tool for sub-perfect tumor phylogeny reconstruction via integrative use of single-cell and bulk sequencing data. If bulk sequencing data is used, we expect that mutations originate from diploid regions of the genome. Due to variance in VAF values, we recommend the use of bulk data in cases when sequencing depth is at least 1000x (haploid coverage). As output, PhISCS reports tree of tumor evolution together with a set of eliminated mutations, where eliminated mutations represent mutations violating Infinite Sites Assumption (due to deletion of variant allele or due to recurrent mutation) or mutations affected by copy number aberrations that were missed during the tumor copy number profiling (e.g. gain of non-variant allele).
 
+PhISCS has been published in Genome Research [(doi:10.1101/gr.234435.118)](http://www.genome.org/cgi/doi/10.1101/gr.234435.118)
 
 ## Contents
   1. [Installation](#installation)

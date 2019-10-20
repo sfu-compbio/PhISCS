@@ -74,9 +74,7 @@ if args.solver.lower() == 'z3':
         cmds = ['python', 'PhISCS-B/csp_z3.py', '-f', args.SCFile, '-n', args.fnProbability, '-p', args.fpProbability, 
                 '-w', args.colEliminationWeight, '-o', args.outDir, '-t 1', '--timeout', args.time, '-m', args.maxMutationsToEliminate]
 else:
-    cmds = ['PhISCS-B/csp_maxsat', '-f', args.SCFile, '-n', args.fnProbability, '-p', args.fpProbability, 
-                '-w', args.colEliminationWeight, '-o', args.outDir, '-t 1', '--timeout', args.time, '-e', args.delta,
-                '-b', args.bulkFile, '-m', args.maxMutationsToEliminate]
+    cmds = ['PhISCS-B/csp_maxsat', '-f', args.SCFile, '-n', args.fnProbability, '-p', args.fpProbability, '-o', args.outDir, '-i']
 
 cmd = ' '.join(str(v) for v in cmds)
 # print(cmd)

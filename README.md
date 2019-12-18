@@ -30,7 +30,7 @@ PhISCS is written in Python and C. It supports both Python 2.7 and 3. Currently 
 <a name="installationilp"></a>
 ### PhISCS-I
 ```
-git clone https://github.com/sfu-compbio/PhISCS.git
+git clone --recursive https://github.com/sfu-compbio/PhISCS.git
 cd PhISCS
 python PhISCS-I --help
 ```
@@ -45,7 +45,7 @@ In order to run PhISCS-I, the main requirement is the installation of Gurobi sol
 ### PhISCS-B
 
 ```
-git clone https://github.com/sfu-compbio/PhISCS.git
+git clone --recursive https://github.com/sfu-compbio/PhISCS.git
 cd PhISCS
 ./PhISCS-B-configure
 python PhISCS-B --help
@@ -65,7 +65,7 @@ Some of CSP solver have been already included in the PhISCS package. There is an
 
 <a name="singlecellmatrix"></a>
 #### 1. Single-cell Matrix
-Single-cell input is assumed to be represented in the form of ternary, __tab-delimited__, matrix with rows corresponding to single-cells and columns corresponding to mutations. We assume that this file contains headers and that matrix is ternary matrix with 0 denoting the absence and 1 denoting the presence of mutation in a given cell, whereas ? represents the lack of information about presence/absence of mutation in a given cell (i.e. missing entry). In order to simplify parsing of the matrix, we also assume that upper left corner equals to string "cellID/mutID".
+Single-cell input is assumed to be represented in the form of ternary, __tab-delimited__, matrix with rows corresponding to single-cells and columns corresponding to mutations. We assume that this file contains headers and that matrix is ternary matrix with 0 denoting the absence and 1 denoting the presence of mutation in a given cell, whereas ? represents the lack of information about presence/absence of mutation in a given cell (i.e. missing entry). __In order to simplify parsing of the matrix, we also assume that upper left corner equals to string `cellID/mutID`__.
 
 Below is an example of single-cell data matrix. Note that mutation and cell names are arbitrary strings not containing tabs or spaces, however they must be unique.
 ```

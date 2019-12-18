@@ -376,7 +376,7 @@ def draw_tree(filename, addBulk, bulkfile):
     import pandas as pd
     import pygraphviz as pyg
 
-    graph = pyg.AGraph(strict=False, directed=True)
+    graph = pyg.AGraph(strict=False, directed=True, dpi=300)
     font_name = 'Avenir'
 
     class Node:
@@ -482,7 +482,7 @@ def draw_farid(filename, addBulk, bulkfile):
                 return False
         return True
 
-    df = pd.read_csv(filename, sep='\t').set_index('cellID/mutID')
+    df = pd.read_csv(filename, sep='\t', index_col=0)
     splitter_mut = '\n'
     matrix = df.values
     names_mut = list(df.columns)
@@ -506,7 +506,7 @@ def draw_farid(filename, addBulk, bulkfile):
     dimensions = np.sort(dimensions)
     names_mut = [names_mut[indices[i]] for i in range(cols)]
 
-    G = nx.DiGraph()
+    G = nx.DiGraph(dpi=300)
     G.add_node(cols)
     G.add_node(cols-1)
     G.add_edge(cols, cols-1, label=names_mut[cols-1])
@@ -534,12 +534,12 @@ def draw_farid(filename, addBulk, bulkfile):
     clusters = {}
     for node in G:
         if node == cols:
-            G.node[node]['label'] = '<<b>germ<br/>cells</b>>'
-            G.node[node]['fontname'] = 'Helvetica'
-            G.node[node]['width'] = 0.4
-            G.node[node]['style'] = 'filled'
-            G.node[node]['penwidth'] = 3
-            G.node[node]['fillcolor'] = 'gray60'
+            G._node[node]['label'] = '<<b>germ<br/>cells</b>>'
+            G._node[node]['fontname'] = 'Helvetica'
+            G._node[node]['width'] = 0.4
+            G._node[node]['style'] = 'filled'
+            G._node[node]['penwidth'] = 3
+            G._node[node]['fillcolor'] = 'gray60'
             continue
         untilnow_mut = []
         sp = nx.shortest_path(G, cols, node)
@@ -553,15 +553,15 @@ def draw_farid(filename, addBulk, bulkfile):
             clusters[node] = '-'
         
         if add_cells:
-            G.node[node]['label'] = clusters[node]
+            G._node[node]['label'] = clusters[node]
         else:
-            G.node[node]['label'] = ''
-            G.node[node]['shape'] = 'circle'
-        G.node[node]['fontname'] = 'Helvetica'
-        G.node[node]['width'] = 0.4
-        G.node[node]['style'] = 'filled'
-        G.node[node]['penwidth'] = 2
-        G.node[node]['fillcolor'] = 'gray90'
+            G._node[node]['label'] = ''
+            G._node[node]['shape'] = 'circle'
+        G._node[node]['fontname'] = 'Helvetica'
+        G._node[node]['width'] = 0.4
+        G._node[node]['style'] = 'filled'
+        G._node[node]['penwidth'] = 2
+        G._node[node]['fillcolor'] = 'gray90'
     i = 1
     for k, v in clusters.items():
         if v == '-':

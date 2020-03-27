@@ -469,7 +469,7 @@ def draw_tree(filename, addBulk, bulkfile):
 
 
 def draw_farid(filename, addBulk, bulkfile):
-    add_cells=False
+    add_cells=True
 
     import pandas as pd
     import pygraphviz as pyg

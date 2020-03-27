@@ -62,7 +62,7 @@ def draw_tree(filename, addBulk, bulkfile):
     import pandas as pd
     import pygraphviz as pyg
 
-    graph = pyg.AGraph(strict=False, directed=True)
+    graph = pyg.AGraph(strict=False, directed=True, dpi=300)
     font_name = 'Avenir'
 
     class Node:

@@ -64,17 +64,18 @@ if args.bulkFile:
 
 filename = os.path.splitext(os.path.basename(args.SCFile))[0]
 outfile = os.path.join(args.outDir, filename)
+dirname = os.path.dirname(__file__)
 
 if args.solver.lower() == 'z3':
     if usingBulk:
-        cmds = ['python', 'PhISCS-B/csp_z3.py', '-f', args.SCFile, '-n', args.fnProbability, '-p', args.fpProbability, 
+        cmds = ['python', '{}/csp_z3.py'.format(dirname), '-f', args.SCFile, '-n', args.fnProbability, '-p', args.fpProbability, 
                 '-w', args.colEliminationWeight, '-o', args.outDir, '-t 1', '--timeout', args.time, '-e', args.delta,
                 '-b', args.bulkFile, '-m', args.maxMutationsToEliminate]
     else:
-        cmds = ['python', 'PhISCS-B/csp_z3.py', '-f', args.SCFile, '-n', args.fnProbability, '-p', args.fpProbability, 
+        cmds = ['python', '{}/csp_z3.py'.format(dirname), '-f', args.SCFile, '-n', args.fnProbability, '-p', args.fpProbability, 
                 '-w', args.colEliminationWeight, '-o', args.outDir, '-t 1', '--timeout', args.time, '-m', args.maxMutationsToEliminate]
 else:
-    cmds = ['PhISCS-B/csp_maxsat', '-f', args.SCFile, '-n', args.fnProbability, '-p', args.fpProbability, '-o', args.outDir, '-i']
+    cmds = ['{}/csp_maxsat'.format(dirname), '-f', args.SCFile, '-n', args.fnProbability, '-p', args.fpProbability, '-o', args.outDir, '-i']
 
 cmd = ' '.join(str(v) for v in cmds)
 # print(cmd)
